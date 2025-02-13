@@ -59,6 +59,11 @@ class Queue {
     getList() {
         return this.queue;
     }
+
+    toString() {
+        return this.getList().join('');
+    }
+
 }
 
 export default Queue;

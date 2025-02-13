@@ -1,35 +1,42 @@
 import Queue from './queue.js';
+import DividedWord from './divided_word.js';
 
-const MAX_TYPED_MEMORY_SIZE = 9;
+const MAX_LEFT_WORDS_NUMBER = 9;
 
 
 class InputModel {
-    static correctly_typed = new Queue(MAX_TYPED_MEMORY_SIZE);
+    static left_words = new Queue(MAX_LEFT_WORDS_NUMBER);
     static last_entered_char = null;
-    static to_be_typed = new Queue(null);
+    static actual_word = null
+    static right_words = new Queue(null);
 
     static initialize(to_be_typed_text) {
-        InputModel.to_be_typed.fillWith(Array.from(to_be_typed_text));
+        const words = to_be_typed_text.split(" ");
+        InputModel.right_words.fillWith(words);
+        InputModel.actual_word = new DividedWord(InputModel.right_words.dequeue());
     }
 
     static isCharacterCorrect(enteredChar) {
         //TODO VALIDATE IF CHAR IS ALPHANUMERIC
         //TODO CHECK IF TO_BE_TYPED IS EMPTY
-        return (enteredChar === InputModel.to_be_typed.getFirst());
+        return (enteredChar === InputModel.actual_word.getActualLetter());
     }
 
-    static shiftCorrectCharacter() {
-        InputModel.correctly_typed.enqueue(InputModel.to_be_typed.dequeue());
+    static shiftCharToLeft() {
+        InputModel.actual_word.moveCharToLeft();
+        if(InputModel.actual_word.isDone()) {
+            InputModel.left_words.enqueue(InputModel.actual_word.getLeftAsText());
+            InputModel.actual_word = new DividedWord(InputModel.right_words.dequeue())
+        }
     }
 
-    static getCorrectlyTyped() {
-        return InputModel.correctly_typed;
-    }
+    static getLeftWords() {return InputModel.left_words;}
 
-    static getToBeTyped() {
-        return InputModel.to_be_typed;
-    }
+    static getActualWord() {return InputModel.actual_word;}
+
+    static getRightWords() {return InputModel.right_words;}
 }
+
 
 
 
@@ -62,18 +69,28 @@ class InputController {
         if (enteredChar !== null) InputController.characterEntered(enteredChar);
     }
 
-    static characterEntered(actualChar) {
-        console.log(`KEYDOWN ${actualChar}`);
-
-        if (InputController.model.isCharacterCorrect(actualChar)) {
-            InputController.model.shiftCorrectCharacter();
-            actualChar = "";
+    static characterEntered(actual_char) {
+        console.log("BEFORE:");
+        console.log(InputController.model.left_words);
+        console.log(InputController.model.actual_word.getLeftAsText());
+        console.log(InputController.model.actual_word.getRightAsText());
+        console.log(InputController.model.right_words);
+        if (InputController.model.isCharacterCorrect(actual_char)) {
+            InputController.model.shiftCharToLeft();
+            actual_char = "";
         }
+        console.log("AFTER:");
+        console.log(InputController.model.left_words);
+        console.log(InputController.model.actual_word.getLeftAsText());
+        console.log(InputController.model.actual_word.getRightAsText());
+        console.log(InputController.model.right_words);
 
         InputController.view.updateTexts(
-            InputController.queueToString(InputController.model.getCorrectlyTyped()), 
-            actualChar, 
-            InputController.queueToString(InputController.model.getToBeTyped())
+            InputController.model.getLeftWords(), 
+            InputController.model.getActualWord().getLeftAsText(),
+            InputController.model.getActualWord().getRightAsText(),
+            InputController.model.getRightWords(),
+            actual_char
         );
     }
 
@@ -85,28 +102,25 @@ class InputController {
     
         return null;
     }
-
-    static queueToString(queue) {
-        return queue.getList().join('');
-    }
 }
 
 
 class InputView {
-    static correctly_typed_element = null;
-    static actual_character = null;
-    static to_be_typed = null;
+    static left_container = null;
+    static actual_word_container = null;
+    static right_container = null;
 
     static initialize() {
-        InputView.correctly_typed_element = document.getElementById("correctly_typed");
-        InputView.actual_character = document.getElementById("actual_character");
-        InputView.to_be_typed = document.getElementById("to_be_typed");
+        InputView.left_container = document.getElementById("correctly_typed");
+        InputView.actual_word_container = document.getElementById("actual_character");
+        InputView.right_container = document.getElementById("to_be_typed");
     }
 
-    static updateTexts(correctly_typed, actual_char, to_be_typed) {
-        InputView.correctly_typed_element.textContent = correctly_typed;
-        InputView.actual_character.textContent = actual_char;
-        InputView.to_be_typed.textContent = to_be_typed;
+    static updateTexts(left_words, actual_word_left, actual_word_right, right_words, typed_char) {
+        //TODO MAYBE I SHOULD ASSIGN A SEPARATE DIV FOR EACH WORD 
+        InputView.left_container.textContent = left_words + actual_word_left;
+        InputView.actual_word_container.textContent = typed_char;
+        InputView.right_container.textContent = actual_word_right + right_words;
     }
 }
 
