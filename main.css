@@ -1,0 +1,42 @@
+#life {
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+}
+
+#progress {
+    font-size: 20px;
+    color: green;
+    font-weight: bold;
+    padding: 10px;
+}
+
+#correctly_typed {
+    font-size: 18px;
+    color: darkgreen;
+    background-color: lightgreen;
+    padding: 10px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+#actual_character {
+    font-size: 20px;
+    color: red;
+    font-weight: bold;
+    padding: 10px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+#to_be_typed {
+    font-size: 18px;
+    color: gold;
+    padding: 10px;
+    display: inline-block;
+    white-space: nowrap;
+    /* overflow-x: hidden; */
+    text-overflow: ellipsis;
+    background: linear-gradient(to right, yellow, transparent);
+}
