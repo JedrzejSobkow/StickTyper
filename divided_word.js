@@ -1,6 +1,6 @@
-import Queue from "./queue.js";
+import { Queue } from "./queue.js";
 
-class DividedWord {
+export class DividedWord {
     constructor(word) {
         this.left = new Queue(word.length);
         this.right = new Queue(word.length);
@@ -17,5 +17,3 @@ class DividedWord {
     }
 
 }
-
-export default DividedWord;

@@ -6,14 +6,16 @@
         <title>Page Title</title>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
         <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-        <script type="module" src='input_handler.js'></script>
+        <script type="module" src='main.js'></script>
     </head>
     <body>
         <div id="root">
 
 
-            <div id="life"> HEART </div>
-
+            <div id="life">
+                <img src="heart_empty.png" class="heart-background" alt="Tło serca">
+                <img src="heart_full.png" class="heart-fill" alt="Wypełnienie serca">
+            </div>
             <div id="progress"> PROGRESS </div>
 
             <div id="words">
@@ -22,7 +24,7 @@
     
                 <div id="actual_word_right"></div>
     
-                <marquee id="to_be_typed"></marquee>
+                <div id="to_be_typed"></div>
             
             </div>
 

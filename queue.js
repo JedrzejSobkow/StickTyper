@@ -1,4 +1,4 @@
-class Queue {
+export class Queue {
     constructor(max_size) {
         if (max_size <= 0) {
             max_size = null;
@@ -65,5 +65,3 @@ class Queue {
     }
 
 }
-
-export default Queue;
