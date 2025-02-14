@@ -24,10 +24,16 @@ class InputModel {
 
     static shiftCharToLeft() {
         InputModel.actual_word.moveCharToLeft();
-        if(InputModel.actual_word.isDone()) {
-            InputModel.left_words.enqueue(InputModel.actual_word.getLeftAsText());
-            InputModel.actual_word = new DividedWord(InputModel.right_words.dequeue())
-        }
+    }
+
+    static isActualWordDone() {
+        return InputModel.actual_word.isDone();
+
+    }
+
+    static shiftWordToLeft() {
+        InputModel.left_words.enqueue(InputModel.actual_word.getLeftAsText());
+        InputModel.actual_word = new DividedWord(InputModel.right_words.dequeue());
     }
 
     static getLeftWords() {return InputModel.left_words;}
@@ -55,6 +61,8 @@ class InputController {
     static initialize(model, view) {
         InputController.model = model;
         InputController.view = view;
+
+        InputController.view.prepareAllWords(InputController.model.getActualWord().getRightAsText(), InputController.model.getRightWords().getList());
     }
 
     static prepareInputView() {
@@ -70,29 +78,23 @@ class InputController {
     }
 
     static characterEntered(actual_char) {
-        console.log("BEFORE:");
-        console.log(InputController.model.left_words);
-        console.log(InputController.model.actual_word.getLeftAsText());
-        console.log(InputController.model.actual_word.getRightAsText());
-        console.log(InputController.model.right_words);
         if (InputController.model.isCharacterCorrect(actual_char)) {
             InputController.model.shiftCharToLeft();
-            actual_char = "";
-        }
-        console.log("AFTER:");
-        console.log(InputController.model.left_words);
-        console.log(InputController.model.actual_word.getLeftAsText());
-        console.log(InputController.model.actual_word.getRightAsText());
-        console.log(InputController.model.right_words);
+            InputController.view.updateActualWord(InputController.model.getActualWord().getRightAsText())
+            
+            if (InputController.model.isActualWordDone()) {
+                InputController.model.shiftWordToLeft();
+                InputController.view.changeActualWord();
+            }
+            else {
 
-        InputController.view.updateTexts(
-            InputController.model.getLeftWords(), 
-            InputController.model.getActualWord().getLeftAsText(),
-            InputController.model.getActualWord().getRightAsText(),
-            InputController.model.getRightWords(),
-            actual_char
-        );
+            }
+
+            actual_char = " ";
+        }
+        InputController.view.updateWronglyEnteredChar(actual_char);
     }
+
 
     static getAlphanumericCharOrNull(char) {
 
@@ -106,28 +108,77 @@ class InputController {
 
 
 class InputView {
-    static left_container = null;
-    static actual_word_container = null;
-    static right_container = null;
+    // moving_left_element = null;
+    // actual_word_left = null;
+    wrongly_typed_char = null;
+    actual_word_right = null;
+    right_element = null;
+
+    actual_word_id = -1;
+    last_word_id = -1;
 
     static initialize() {
-        InputView.left_container = document.getElementById("correctly_typed");
-        InputView.actual_word_container = document.getElementById("actual_character");
-        InputView.right_container = document.getElementById("to_be_typed");
+        // InputView.moving_left_element = document.getElementById("moving_words_left");
+        // InputView.actual_word_left = document.getElementById("actual_word_left");
+        InputView.wrongly_typed_char = document.getElementById("wrongly_typed_char");
+        InputView.actual_word_right = document.getElementById("actual_word_right");
+        InputView.right_element = document.getElementById("to_be_typed");
+
+        InputView.actual_word_id = -1;
+        InputView.last_word_id = 0;
     }
 
-    static updateTexts(left_words, actual_word_left, actual_word_right, right_words, typed_char) {
-        //TODO MAYBE I SHOULD ASSIGN A SEPARATE DIV FOR EACH WORD 
-        InputView.left_container.textContent = left_words + actual_word_left;
-        InputView.actual_word_container.textContent = typed_char;
-        InputView.right_container.textContent = actual_word_right + right_words;
+    static prepareAllWords(actual_word, right_words) {
+        InputView.actual_word_right.textContent = actual_word
+
+        right_words.forEach(word => {
+            const div = InputView.transformWordIntoDiv(word);
+            InputView.right_element.appendChild(div);
+        });
+    }
+
+
+
+
+    // static updateTexts(left_words, actual_word_left, actual_word_right, right_words, typed_char) {
+    //     //TODO MAYBE I SHOULD ASSIGN A SEPARATE DIV FOR EACH WORD 
+    //     InputView.moving_left_element.document
+    //     InputView.actual_word_element.textContent = typed_char;
+    //     InputView.right_element.textContent = actual_word_right + right_words;
+    // }
+
+    static changeActualWord() {
+        console.log(InputView.actual_word_id);
+        InputView.actual_word_id++;
+        const new_actual_word_element = document.getElementById(InputView.actual_word_id);
+        InputView.actual_word_right.textContent = new_actual_word_element.textContent;
+        new_actual_word_element.remove();
+    }
+
+    static updateActualWord(actual_right) {
+        InputView.actual_word_right.textContent = actual_right; 
+    }
+
+    static updateWronglyEnteredChar(newChar) {
+        InputView.wrongly_typed_char.textContent = newChar;
+    }
+
+
+    static transformWordIntoDiv(word) {
+
+        const newElement = document.createElement("div");
+        newElement.textContent = word;
+
+        newElement.id = InputView.last_word_id;
+        InputView.last_word_id++;
+
+        return newElement;
     }
 }
 
-  
 
 
-const text = "to jest jakis randomowy tekst";
+const text = `The world is rapidly changing, and technology plays a crucial role in this transformation. Over the past few decades, advancements in various fields, from artificial intelligence to renewable energy, have reshaped the way we live, work, and interact with each other. As we move further into the 21st century, the pace of innovation is only accelerating, and it's clear that technology will continue to shape our future. One of the most significant technological developments is the rise of the internet. The internet has revolutionized communication, allowing people to connect instantly with others across the globe. It has also transformed the way businesses operate, providing new opportunities for marketing, e-commerce, and remote work. The rise of social media platforms has allowed individuals to share their thoughts and ideas with a global audience, creating a new kind of interconnected world.In addition to communication, technology has made great strides in healthcare. Medical innovations, such as telemedicine and wearable health devices, have improved access to healthcare services and enabled early detection of diseases. Artificial intelligence is also being used to assist doctors in diagnosing and treating patients, while research into personalized medicine is paving the way for more effective treatments tailored to individuals' genetic profiles.`;
 
 InputModel.initialize(text);
 InputView.initialize();
