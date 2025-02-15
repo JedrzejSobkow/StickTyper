@@ -57,9 +57,3 @@ export class LifeController {
         }
     }
 }
-
-// document.addEventListener("DOMContentLoaded", () => {
-//     const model = new LifeModel();
-//     const view = new LifeView(".heart-fill");
-//     new LifeController(model, view);
-// });

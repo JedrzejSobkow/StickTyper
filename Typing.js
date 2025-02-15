@@ -43,11 +43,11 @@ export class TypingModel {
 }
 
 export class TypingController {
-    constructor(model, view, text_speed) {
+    constructor(model, view, text_speed_fun_collection) {
         this.model = model;
         this.view = view;
 
-        this.view.setSpeed(text_speed);
+        this.view.setSpeedFunCollection(text_speed_fun_collection);
 
 
         this.allowedChars = [
@@ -58,7 +58,7 @@ export class TypingController {
                     '{', '}', '|', '^', '~'
                 ];
 
-        this.view.prepareAllWords(this.model.getActualWord().getRightAsText(), this.model.getRightWords().getList());
+        this.view.prepareWords(this.model.getActualWord().getRightAsText(), this.model.getRightWords().getList());
 
         document.addEventListener("keydown", this.onKeydownEvent.bind(this));
     }
@@ -107,53 +107,71 @@ export class TypingView {
 
         this.actual_word_id = -1;
         this.last_word_id = 0;
+        this.last_word_position = -1;
         this.is_in_move = false;
-
+        this.interval_id = null;
         this.collision_listener = null;
     }
 
-    prepareAllWords(actual_word, right_words) {
+    prepareWords(actual_word, right_words) {
         this.actual_word_right.textContent = actual_word;
-        let position = this.right_element.offsetWidth;
+        this.last_word_position = this.right_element.offsetWidth;
 
         right_words.unshift(actual_word);
 
         right_words.forEach(word => {
-            const div = this.transformWordIntoDiv(word);
-            div.style.position = "absolute";
-            div.style.left = `${position}px`;
-            this.right_element.appendChild(div);
-            position += div.offsetWidth + 20;
+            this.appendWordIntoRightElement(word);
         });
     }
 
-    animateWords() {        
-        const move = () => {
+    animateWords() {
+        if (this.is_in_move) return;
+        this.is_in_move = true;
+        if (this.collision_listener) this.collision_listener.updateCollisionState(false);
+        
+        this.interval_id = setInterval(() => {
             const words = document.querySelectorAll("#to_be_typed div");
             if (words.length === 0) {
                 this.is_in_move = false;
+                clearInterval(this.interval_id);
                 return;
             }
             
-            const firstWord = words[0]; 
-            let firstWordLeft = parseInt(firstWord.style.left, 10);
-            if (firstWordLeft <= 0) {
+
+            const first_word = words[0]; 
+            let first_word_left = parseInt(first_word.style.left, 10);
+            if (first_word_left <= 0) {
                 this.is_in_move = false;
+                clearInterval(this.interval_id);
                 if (this.collision_listener) this.collision_listener.updateCollisionState(true);
                 return; 
             }
+
+
+
+            const offset = this.speed_fun_collection.getNext();
+            // console.log(offset);
+
+            let should_be_block = true;
+
             words.forEach(word => {
                 let currentLeft = parseInt(word.style.left, 10);
-                word.style.left = `${currentLeft - this.speed}px`;
-            });
-            requestAnimationFrame(move);
-        };
+                word.style.left = `${currentLeft - offset}px`;
 
-        if (!this.is_in_move) {
-            this.is_in_move = true;
-            if (this.collision_listener) this.collision_listener.updateCollisionState(false);
-            move();
-        }
+                if (word.style.display === "none") {
+                    word.style.display = "block";
+                    let should_be_block = this.shouldWordBeVisibleInRight(word);
+                    word.style.display = "none";
+
+                    if (should_be_block) {
+                        word.style.display = "block";
+                        //TODO FADE WHEN CHANGING DISPLAY TO BLOCK
+                    } 
+                }
+
+                //YES, I'M AWARE THAT currentLeft - offset IS CASTET TO INT BUT IT HAS TO WORK LIKE THIS UNTIL I FIND ANYTHING BETTER
+            });
+        }, 8);
     }
 
     changeActualWord() {
@@ -173,14 +191,35 @@ export class TypingView {
         this.wrongly_typed_char.textContent = newChar;
     }
 
-    transformWordIntoDiv(word) {
+    appendWordIntoRightElement(word) {
         const newElement = document.createElement("div");
         newElement.textContent = word;
         newElement.id = this.last_word_id++;
+
+        newElement.style.position = "absolute";
+        newElement.style.left = `${this.last_word_position}px`;
+        this.right_element.appendChild(newElement);
+        this.last_word_position += newElement.offsetWidth + 20;
+
+        if (this.shouldWordBeVisibleInRight(newElement)) {
+            console.log(newElement.getBoundingClientRect().right);
+            newElement.style.display = "block";
+            console.log("block");
+        }
+        else {
+            console.log(newElement.getBoundingClientRect().right);
+            newElement.style.display = "none";
+            console.log("none");
+        }
+
         return newElement;
     }
 
-    setSpeed(speed) {this.speed = speed; }
+    shouldWordBeVisibleInRight(word_elem) {
+        return parseInt(word_elem.getBoundingClientRect().right, 10) < parseInt(this.right_element.getBoundingClientRect().right, 10)
+    }
+
+    setSpeedFunCollection(speed_fun_collection) {this.speed_fun_collection = speed_fun_collection; }
 
 
     registerCollisionListener(collision_listener) {
@@ -188,12 +227,5 @@ export class TypingView {
     }
 }
 
-
-
-// document.addEventListener("DOMContentLoaded", () => {
-//     const text = `The world is rapidly changing, and technology plays a crucial role in this transformation. Over the past few decades, advancements in various fields, from artificial intelligence to renewable energy, have reshaped the way we live, work, and interact with each other. As we move further into the 21st century, the pace of innovation is only accelerating, and it's clear that technology will continue to shape our future.`;
-
-//     const model = new TypingModel(text);
-//     const view = new TypingView();
-//     new TypingController(model, view);
-// });
+//TODO FIRST WORD FROM 🤓RIGHT WORDS IS DIVIDED BY COLOURS!!! OR ACTUAL CHAR IS UNDERLINED!!!
+//TODO wal sie na łeb pajacu gupi kocham ce kolego kochaniutki ojojojoj ale jestes piekniutki fajniutki ojeju
