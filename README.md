@@ -1,11 +1,10 @@
 # StickTyper
 
-StickTyper is an interactive typing game aimed at improving typing speed and accuracy. The game provides a set of words to type, and the player needs to type them as fast as possible without making any mistakes. The interface gives real-time feedback on performance using a heart icon that gradually fills up as you progress. The game keeps track of typing events, manages word queues, and provides an efficient way to handle game logic.
+StickTyper is an interactive typing game aimed at improving typing speed and accuracy. The game provides a set of words to type, and the player needs to type them as fast as possible without making mistakes. The game keeps track of typing events, manages word queues, and provides an efficient way to handle game logic.
 
 ## Features
 
 - **Typing Challenge**: Words are presented to the player, who must type them as quickly as possible.
-- **Heart Progression**: The player's progress is visually represented by a heart icon, which fills up as the user types faster.
 - **Word Queue System**: Words are displayed in sequence, and the game dynamically manages the queue to ensure smooth gameplay.
 - **Real-time Feedback**: The player receives instant feedback, both visually (hearts) and through text input.
 - **Responsive UI**: The interface is responsive and adapts to different screen sizes for mobile and desktop users.
@@ -14,6 +13,17 @@ StickTyper is an interactive typing game aimed at improving typing speed and acc
 ## Installation
 
 To run this project locally, follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/StickTyper.git
+   cd StickTyper
+
+2. Set up and run docker:
+
+   ```bash
+   docker-compose up --build
 
 ## File Structure:
 
@@ -42,8 +52,4 @@ StickTyper
         └── typing.js                         # JavaScript for handling typing events and user input
 
 
-1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/yourusername/StickTyper.git
-   cd StickTyper
