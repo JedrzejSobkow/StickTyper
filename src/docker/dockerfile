@@ -1,0 +1,17 @@
+# Używamy obrazu z Node.js
+FROM node:18-alpine
+
+# Ustawiamy katalog roboczy w kontenerze
+WORKDIR /app
+
+# Instalujemy live-server do automatycznego odświeżania
+RUN npm install -g live-server
+
+# Kopiujemy pliki z obecnego katalogu do kontenera
+COPY . /app
+
+# Otwieramy port 8080
+EXPOSE 8080
+
+# Uruchamiamy live-server
+CMD ["live-server", "--host=0.0.0.0", "--port=8080", "--watch=/app"]

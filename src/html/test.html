@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animacja Pojawiania Elementu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        #container {
+            position: relative;
+            width: 600px;
+            height: 50px;
+            border: 2px solid black;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .word {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            background-color: lightblue;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        /* Animacja pojawiania */
+        .fade-in {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="moveWords()">Przesuń tekst</button>
+    <div id="container"></div>
+
+    <script>
+        const words = ["Pierwszy", "Drugi", "Trzeci", "Czwarty"];
+        const container = document.getElementById("container");
+        let lastWordPosition = container.offsetWidth;
+
+        // Tworzenie elementów
+        words.forEach((word, index) => {
+            const wordDiv = document.createElement("div");
+            wordDiv.textContent = word;
+            wordDiv.classList.add("word", "fade-in");
+            wordDiv.style.left = `${lastWordPosition}px`;
+            wordDiv.dataset.index = index; // ID dla identyfikacji
+            wordDiv.style.opacity = "0";  // Ukrywamy na starcie
+            container.appendChild(wordDiv);
+            lastWordPosition += wordDiv.offsetWidth + 20;
+        });
+
+        function moveWords() {
+            const wordElements = document.querySelectorAll(".word");
+
+            wordElements.forEach(word => {
+                let currentLeft = parseInt(word.style.left, 10);
+                word.style.left = `${currentLeft - 50}px`;
+
+                // Jeśli element wcześniej był niewidoczny, animujemy jego pojawienie
+                if (word.style.opacity === "0") {
+                    word.style.display = "block";
+                    requestAnimationFrame(() => {
+                        word.style.opacity = "1"; // Stopniowe pojawianie się
+                    });
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
