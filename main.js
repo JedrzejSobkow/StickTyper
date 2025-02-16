@@ -1,6 +1,6 @@
-import { TypingController, TypingModel, TypingView } from './Typing.js';
-import { LifeController, LifeModel, LifeView } from './Life.js';
-import { OneDirectionFunCollection } from './OneDirectionFunCollection.js'
+import { TypingController, TypingModel, TypingView } from './typing.js';
+import { LifeController, LifeModel, LifeView } from './life.js';
+import { OneDirectionFunCollection } from './one_direction_fun_collection.js'
 
 
 

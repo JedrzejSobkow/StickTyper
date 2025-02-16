@@ -119,6 +119,7 @@ export class TypingView {
 
         right_words.unshift(actual_word);
 
+
         right_words.forEach(word => {
             this.appendWordIntoRightElement(word);
         });
@@ -169,7 +170,7 @@ export class TypingView {
                     } 
                 }
 
-                //YES, I'M AWARE THAT currentLeft - offset IS CASTET TO INT BUT IT HAS TO WORK LIKE THIS UNTIL I FIND ANYTHING BETTER
+                //YES, I'M AWARE THAT currentLeft - offset IS CASTED TO INT BUT IT HAS TO WORK LIKE THIS UNTIL I FIND ANYTHING BETTER
             });
         }, 8);
     }
@@ -202,14 +203,14 @@ export class TypingView {
         this.last_word_position += newElement.offsetWidth + 20;
 
         if (this.shouldWordBeVisibleInRight(newElement)) {
-            console.log(newElement.getBoundingClientRect().right);
+            // console.log(newElement.getBoundingClientRect().right);
             newElement.style.display = "block";
-            console.log("block");
+            // console.log("block");
         }
         else {
-            console.log(newElement.getBoundingClientRect().right);
+            // console.log(newElement.getBoundingClientRect().right);
             newElement.style.display = "none";
-            console.log("none");
+            // console.log("none");
         }
 
         return newElement;
